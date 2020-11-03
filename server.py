@@ -6,7 +6,7 @@ import const
 
 class ApplicationServer(rpyc.Service):
 
-	def self_register(self, data):
+	def self_register(self):
 		local_ip = socket.gethostbyname(socket.gethostname())
 		dir_conn = rpyc.connect(DIR_IP, DIR_PORT)
 		dir_conn.root.server_register(const.APP_NAME, local_ip, const.APP_PORT)
@@ -20,5 +20,6 @@ class ApplicationServer(rpyc.Service):
 		return bmi
 
 if __name__ == "__main__":
-	server = ForkingServer(ApplicationServer, port=12345)
+	server = ForkingServer(ApplicationServer, const.APP_PORT)
+	server.self_register()
 	server.start()
