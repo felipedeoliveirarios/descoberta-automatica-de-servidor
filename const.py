@@ -1,0 +1,4 @@
+DIR_IP = ""
+DIR_PORT = 12345
+APP_PORT = 12346
+APP_NAME = "bmi_server"
