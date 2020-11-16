@@ -33,13 +33,22 @@ def DirectoryServer(rpyc.Service):
 
 	# Retorna um servidor, se existir, da lista.
 	def fetch_server(self, name):
-		print("Looking for server with name \"{}\"...".format(name))
-		if name in server_registry:
+		
+		if self.query_registry(name):
 			print("\tSuccess!")
 			return (server_registry[name][1], server_registry[name][2])
 		else:
 			print("\tEntry not found.")
 			return None
+
+	def query_registry(self, name)
+		print("Looking for server with name \"{}\"...".format(name))
+		if name in server_registry:
+			print("Name \"{}\" found in registry.".format(name))
+			return True
+		else:
+			print("Name \"{}\" not found in registry.".format(name))
+			return False
 
 
 if __name__ == "__main__":
