@@ -1,53 +1,61 @@
 import rpyc
 import const
 
-
-"""
-"""
 class Client:
 
-	application_server = None
-	app_conn = None
+	def run(self):
+		run = True
+		while run:
+			print(const.CLIENT_MENU)
+			app_selection = int(input())
 
-	def get_server(self):
-		dir_conn = rpyc.connect(const.DIR_IP, const.DIR_PORT)
-		application_server = dir_conn.root.fetch_server(const.APP_NAME)
+			if not app_selection:
+				print("Opção inválida!\n")
+				continue
 
-	def application_connect(self):
-		app_conn = rpyc.connect(application_server)
+			if app_selection == 0:
+				print("#"*80)
+				run = False
+				break
 
-	def call_application(self):
-		height = input("Insira sua altura: ")
-		width = input("Insira seu peso: ")
-		age = input("Insira sua idade: ")
-		bmi = app_conn.root.run_application(width, height)
+			elif app_selection == 1:
+				print("#\n"*80)
+				self.bmi_app()
 
-		if age <= 65:
-			if bmi < 18.5:
-				print("Você está abaixo do peso normal.")
-			elif bmi >= 18.5 and bmi < 25:
-				print("Você está dentro do peso normal.")
-			elif bmi >= 25 and bmi < 30:
-				print("Você está acima do peso normal.")
-			elif bmi >= 30 and bmi < 35:
-				print("Você está com obesidade Classe 1. Procure tratamento médico.")
-			elif bmi >= 35 and bmi < 40:
-				print("Você está com obesidade Classe 2. Procure tratamento médico.")
-			elif bmi >= 40:
-				print("Você está com obesidade Classe 3. Procure tratamento médico.")
-			else:
-				print("Valores de entrada inválidos.")
+			elif app_selection == 2:
+				print("#\n"*80)
+				self.date_time_app()
 
-		else:
-			if bmi < 22:
-				print("Você está abaixo do peso normal.")
-			elif bmi >= 22 and bmi < 27:
-				print("Você está dentro do peso normal.")
-			elif bmi >= 27:
-				print("Você está acima do peso normal.")
+			elif app_selection == 3:
+				print("#\n"*80)
+				self.motivational_app()
 
+	def bmi_app(self):
+		peso = float(input("Por favor, insira seu peso em quilogramas."))
+		altura = float(input("Por favor, insira sua altura em metros. "))
+		idade = int(input("Por favor, insira sua idade. "))
+
+		if peso and altura and idade:
+			root_conn = rpyc.conn(ROOT_IP, ROOT_PORT)
+			application_address = root_conn.lookup(const.APP_1_NAME)
+			app_conn = rpyc.conn(application_address)
+			result = app_conn.root.run(peso, altura, idade)
+			print("\n"+ result + "\n")
+
+	def date_time_app(self):
+		root_conn = rpyc.conn(ROOT_IP, ROOT_PORT)
+		application_address = root_conn.lookup(const.APP_2_NAME)
+		app_conn = rpyc.conn(application_address)
+		result = app_conn.root.run()
+		print("\nHora - Data: "+ result + "\n")
+		
+	def motivational_app(self):
+		root_conn = rpyc.conn(ROOT_IP, ROOT_PORT)
+		application_address = root_conn.lookup(const.APP_2_NAME)
+		app_conn = rpyc.conn(application_address)
+		result = app_conn.root.run()
+		print('\n' + result + '\n')
+	
 if __name__ == "__main__":
 	instance = Client()
-	instance.get_server()
-	instance.application_connect()
-	instance.call_application()
+	instance.run()
