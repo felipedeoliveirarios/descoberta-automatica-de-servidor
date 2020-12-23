@@ -16,14 +16,14 @@ class ApplicationServer(rpyc.Service):
 	def register(self, name, port, directory_server_name):
 		print("[INFO] Trying to self-register as \"{}\"...".format(name))
 
-		root_conn = rpyc.conn(ROOT_IP, ROOT_PORT) # Se conecta ao servidor de nomes raiz
+		root_conn = rpyc.connect(const.ROOT_IP, const.ROOT_PORT) # Se conecta ao servidor de nomes raiz
 		directory_server_address = root_conn.root.lookup(directory_server_name) # Encontra o endereço do servidor de diretório.
 
 		if type(directory_server_address) is not tuple: # Caso o retorno não seja o endereço...
 			print(directory_server_address) # Exibe a mensagem de erro retornada.
 			return False # Finaliza o método.
 
-		dir_conn = rpyc.connect(directory_server_address) # Se conecta ao servidor de nomes.
+		dir_conn = rpyc.connect(directory_server_address[0], directory_server_address[1]) # Se conecta ao servidor de nomes.
 
 		local_ip = socket.gethostbyname(socket.gethostname()) # Obtém o ip local.
 		app_address = (local_ip, port)
@@ -40,7 +40,7 @@ class ApplicationServer(rpyc.Service):
 
 	def unregister(self):
 		print("[INFO] Trying to self-unregister...")
-		root_conn = rpyc.conn(ROOT_IP, ROOT_PORT) # Se conecta ao servidor de nomes raiz
+		root_conn = rpyc.connect(const.ROOT_IP, const.ROOT_PORT) # Se conecta ao servidor de nomes raiz
 		result = root_conn.root.unregister(self.app_name)
 
 		if "[ERROR]" in result:
@@ -56,14 +56,14 @@ class ApplicationServer(rpyc.Service):
 		print("[INFO] Atualizando endereço.")
 		separator_position = self.app_name.find(':')
 		directory_server_name = name[:separator_position]
-		root_conn = rpyc.conn(ROOT_IP, ROOT_PORT) # Se conecta ao servidor de nomes raiz
+		root_conn = rpyc.connect(const.ROOT_IP, const.ROOT_PORT) # Se conecta ao servidor de nomes raiz
 		directory_server_address = root_conn.root.lookup(directory_server_name) # Encontra o endereço do servidor de diretório.
 
 		if type(directory_server_address) is not tuple: # Caso o retorno não seja o endereço...
 			print(directory_server_address) # Exibe a mensagem de erro retornada.
 			return False # Finaliza o método.
 
-		dir_conn = rpyc.connect(directory_server_address) # Se conecta ao servidor de nomes.
+		dir_conn = rpyc.connect(directory_server_address[0], directory_server_address[1]) # Se conecta ao servidor de nomes.
 
 		local_ip = socket.gethostbyname(socket.gethostname()) # Obtém o ip local.
 		app_address = (local_ip, port)
@@ -77,11 +77,11 @@ class ApplicationServer(rpyc.Service):
 			print(result) # Exibe o erro.
 			return False 
 		
-	def run(self):
+	def exposed_run(self):
 		pass
 
 class BMIServer(ApplicationServer):
-	def run(self, weigth, height, age):
+	def exposed_run(self, weigth, height, age):
 		print("[INFO] Starting BMI application.")
 		bmi = weigth/(height**2)
 		result = "Seu IMC é {.2f}. ".format(bmi)
@@ -114,14 +114,14 @@ class BMIServer(ApplicationServer):
 		return result
 
 class DateTimeServer(ApplicationServer):
-	def run(self):
+	def exposed_run(self):
 		print("[INFO] Starting DateTime application.")
 		result = datetime.now().strftime("%H:%M - %d/%m/%Y")
 		print("[INFO] Finishing DateTime application.")
 		return result
 
 class MotivationalServer(ApplicationServer):
-	def run(self):
+	def exposed_run(self):
 		index = random.random(0, len(const.MOTIVATIONAL_STRINGS))
 		return const.MOTIVATIONAL_STRINGS[index]
 

@@ -5,8 +5,9 @@ import socket
 from directory_server import DirectoryServer
 import const
 
-server = ThreadedServer(DirectoryServer, port=const.DIR_PORT_B) # Define a porta para o servidor.
+server = DirectoryServer()
 server.server_name = const.DIR_NAME_B # Define o nome do servidor de nomes.
+server = ThreadedServer(server, port=const.DIR_PORT_B) # Define a porta para o servidor.
 
 local_ip = socket.gethostbyname(socket.gethostname()) # Encontra o IP local.
 address = (local_ip, const.DIR_PORT_B) # Empacota endereço ip e porta em uma tupla.

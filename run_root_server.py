@@ -1,7 +1,8 @@
 import rpyc
 from rpyc.utils.server import ThreadedServer
 
-import directory_server
+from directory_server import DirectoryServer
+import const
 
-root_server = ThreadedServer(DirectoryServer, port=const.DIR_PORT)
+root_server = ThreadedServer(DirectoryServer, port=const.ROOT_PORT)
 root_server.start()
