@@ -6,34 +6,36 @@ import const
 
 parser = argparse.ArgumentParser(description="Inicia um servidor de aplicação.")
 parser.add_argument("app", type=str, help="Escolha a aplicação cujo servidor deve ser iniciado, entre \"imc\", \"datahora\" e \"motivacional\"." )
-parser.add_argument("server", type=str, help="Escolha entre os dois servidores de nomes com \"A\" ou \"B\".")
+parser.add_argument("name", type=str, help="Nome usado pela aplicação ao se registrar no servidor de nomes.")
+parser.add_argument("server", type=str, help="Servidor de segundo nível no qual a aplicação deve se registrar.")
+parser.add_argument("port", type=int, help="Porta usada na conexão com a aplicação.")
 args = parser.parse_args()
 
-server_name = ''
-if args.server == 'A':
-	server_name = const.DIR_NAME_A
-elif args.server == 'B':
-	server_name = const.DIR_NAME_B
+app_server_name = args.name
+app_server_port = args.port
+dir_server_name = args.server
+
+root_conn = rpyc.connect(const.ROOT_IP, const.ROOT_PORT) # Estabelece conexão com o servidor de nomes raiz.
+response = root_conn.root.lookup(dir_server_name)
+
+if type(response) is tuple:
+	if args.app == "imc":
+		app_server = BMIServer()
+
+	elif args.app == "datahora":
+		app_server = DateTimeServer()
+
+	elif args.app == "motivacional":
+		app_server = MotivationalServer()
+
+	else:
+		raise ValueError("Argumento \"{}\" inválido.".format(args.app))
+
+	local_ip = socket.gethostbyname(socket.gethostname())
+
+	app_server.register(app_server_name, app_server_port, dir_server_name)
+	app_server = ForkingServer(app_server, port=app_server_port)
+	app_server.start()
+
 else:
-	raise ValueError("Argumento \"{}\" inválido.".format(args.server))
-
-if args.app == "imc":
-	app_server = BMIServer()
-	app_server.register(const.APP_1_NAME, const.APP_1_PORT, server_name)
-	app_server = ForkingServer(app_server, str(const.APP_1_PORT))
-	app_server.start()
-
-elif args.app == "datahora":
-	app_server = DateTimeServer()
-	app_server.register(const.APP_2_NAME, const.APP_2_PORT, server_name)
-	app_server = ForkingServer(app_server, str(const.APP_2_PORT))
-	app_server.start()
-
-elif args.app == "motivacional":
-	app_server = MotivationalServer()
-	app_server.register(const.APP_3_NAME, const.APP_3_PORT, server_name)
-	app_server = ForkingServer(app_server, str(const.APP_3_PORT))
-	app_server.start()
-
-else:
-	raise ValueError("Argumento \"{}\" inválido.".format(args.app))
+	print("[ERRO] Não foi possível localizar o servidor de nomes \"{}\"".format(dir_server_name))

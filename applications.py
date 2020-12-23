@@ -84,7 +84,7 @@ class BMIServer(ApplicationServer):
 	def exposed_run(self, weigth, height, age):
 		print("[INFO] Starting BMI application.")
 		bmi = weigth/(height**2)
-		result = "Seu IMC é {.2f}. ".format(bmi)
+		result = "Seu IMC é {:.2f}. ".format(bmi)
 
 		if age <= 65:
 			if bmi < 18.5:
@@ -122,6 +122,6 @@ class DateTimeServer(ApplicationServer):
 
 class MotivationalServer(ApplicationServer):
 	def exposed_run(self):
-		index = random.random(0, len(const.MOTIVATIONAL_STRINGS))
+		index = random.randint(0, len(const.MOTIVATIONAL_STRINGS))
 		return const.MOTIVATIONAL_STRINGS[index]
 
