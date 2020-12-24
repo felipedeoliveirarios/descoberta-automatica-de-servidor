@@ -1,4 +1,4 @@
-ROOT_IP = '3.84.60.89'
+ROOT_IP = '172.31.90.4'
 ROOT_PORT = 12345
 
 MOTIVATIONAL_STRINGS = ["Dificuldades preparam pessoas comuns para destinos extraordinários. \n- C.S. Lewis",
