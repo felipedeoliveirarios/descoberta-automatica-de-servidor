@@ -1,5 +1,5 @@
-ROOT_IP = '<root_ip_placeholder>'
-ROOT_PORT = '<root_port_placeholder>'
+ROOT_IP = '3.84.60.89'
+ROOT_PORT = 12345
 
 MOTIVATIONAL_STRINGS = ["Dificuldades preparam pessoas comuns para destinos extraordinários. \n- C.S. Lewis",
 						"A paciência é um elemento fundamental do sucesso. \n- Bill Gates",
