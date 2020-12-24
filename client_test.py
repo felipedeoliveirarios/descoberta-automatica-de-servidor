@@ -55,7 +55,7 @@ class Client:
 		app_address = root_conn.root.lookup("B:3")
 		print("[INFO] Encontrado. Endereço: {}".format(app_address))
 		print("[INFO] Estabelecendo conexão com o serviço...")
-		app_conn = rpyc.connect(app_address)
+		app_conn = rpyc.connect(app_address[0], app_address[1])
 		print("[INFO] Feito. Chamando o serviço...")
 		result = app_conn.root.run()
 		print("[INFO] Feito. Resultado: \n\"{}\".".format(result))
